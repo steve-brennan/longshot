@@ -4,12 +4,17 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var i18n = require('i18n');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
 
+// Configure i18n
+i18n.configure({
+  directory: __dirname + '/locales'
+});
 //TODO: use update or remove
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,6 +27,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(i18n.init); // Uses 'accept-language' header to infer language
 
 app.use('/', index);
 app.use('/users', users);
