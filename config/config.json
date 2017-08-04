@@ -1,5 +1,15 @@
 {
     "env": {
         "port": "3000"
+    },
+
+    "service": {
+        "gamedata": {
+            "tattslotto": {
+                "endpoint": "https://thelott.com/DownloadFile.ashx?product=TattsLotto",
+                "publicationType": "download",
+                "format": "csv"
+            }
+        }
     }
 }
