@@ -9,6 +9,11 @@
                 "endpoint": "https://thelott.com/DownloadFile.ashx?product=TattsLotto",
                 "publicationType": "download",
                 "format": "csv"
+            },
+            "testDataSmallTattslotto": {
+                "endpoint": "/../tests/testGameDataSmallTattslotto.csv",
+                "publicationType": "localfile",
+                "format": "csv"
             }
         }
     }
