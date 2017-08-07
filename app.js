@@ -6,6 +6,16 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var i18n = require('i18n');
 
+//Set up mongoose connection
+var mongoose = require('mongoose');
+var mongoDB = 'mongodb://localhost:27017'; //docker run --name dev-mongo -d mongo
+
+mongoose.connect(mongoDB, function(error) {
+  if(error){console.log('EEROR= '+error);}
+})
+var db = mongoose.connection;
+//db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
 var index = require('./routes/index');
 var users = require('./routes/users');
 

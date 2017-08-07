@@ -4,7 +4,7 @@ var fs = require('fs');
 var http = require('http');
 var request = require('request');
 var rp = require('request-promise');
-var csvparser = require('csv-parser');
+
 var config = require('../config/config.json');
 
 // Returns historical data for a given game.
@@ -27,7 +27,6 @@ exports.getRemoteGameData = function (callback) {
         .catch((err) => {
             console.log(err); //TODO: handle error
         });
-
 };
 
 exports.parseGameData = function () {
