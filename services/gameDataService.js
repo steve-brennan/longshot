@@ -4,14 +4,54 @@ var fs = require('fs');
 var http = require('http');
 var request = require('request');
 var rp = require('request-promise');
+var Draw = require('../models/draw');
 
 var config = require('../config/config.json');
 
 // Returns historical data for a given game.
-exports.getGameData = function() {
+exports.getGameData = function(callback) {
 
-    results =  getRemoteGameData();
+    generateLocalGameData();
+    
+};
 
+exports.generateLocalGameData = function (callback) {
+    
+    fs.readFile(__dirname + config.service.gamedata.testDataSmallTattslotto.endpoint, (err, data) =>{
+        if(err) {callback(err);}
+        this.storeGameData(data, callback);
+    });
+    
+};
+
+exports.storeGameData = function(data, callback) {
+
+        var draws = [];
+        var drawHistoryArray = data.toString().split("\n");
+
+        for( let i = 1; i < drawHistoryArray.length; i++) {
+
+            var drawRecordArray = drawHistoryArray[i].toString().split(",");
+
+            draws.push({
+                draw_number: drawRecordArray[0],
+                draw_date: drawRecordArray[1],
+                winning_numbers: [drawRecordArray[2]
+                                ,drawRecordArray[3]
+                                ,drawRecordArray[4]
+                                ,drawRecordArray[5]
+                                ,drawRecordArray[6]
+                                ,drawRecordArray[7]],
+                supplementary_numbers: [drawRecordArray[8]
+                                        ,drawRecordArray[9]],
+                division: drawRecordArray.length > 10 ? drawRecordArray[10] : ''
+            });  
+        }
+
+        Draw.create(draws, (err, storedDraws) => {
+            if(err) {callback(err);}
+            callback();
+        });
 };
 
 /**TODO: Either wire to a cron job or set to get at appload based on time last called.Set to private. 
@@ -59,18 +99,10 @@ exports.parseGameData = function () {
                                 ,drawRecordArray[7]
                                 ,drawRecordArray[8]
                                 ,drawRecordArray[9]],
-                division: drawRecordArray.length > 10 ? drawRecordArray[10] : ''
+                division: drawRecordArray.length > 10 ? drawRecordArray[10] : 'blah'
             });
         }
+       
     });
 
 };
-
-function modelLab() {
-
-       
-}
-
-this.parseGameData();
-
-

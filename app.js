@@ -8,7 +8,7 @@ var i18n = require('i18n');
 
 //Set up mongoose connection
 var mongoose = require('mongoose');
-var mongoDB = 'mongodb://localhost:27017'; //docker run --name dev-mongo -d mongo
+var mongoDB = 'mongodb://mongo:27017/longshot'; //docker run --name dev-mongo -d mongo
 
 mongoose.connect(mongoDB, function(error) {
   if(error){console.log('EEROR= '+error);}

@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  web:
+    build: .
+    volumes:
+      - .:/longshot
+    ports:
+      - "3000:3000"
+    links:
+      - mongo
+    environment:
+      PORT: 3000
+    tty: true
+  mongo:
+    image: mongo
+    ports: 
+      - "27017:27017"
