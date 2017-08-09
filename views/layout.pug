@@ -1,7 +1,7 @@
 doctype html
 html(lang='en')
   head
-    title= title
+    title #{__('TITLE')}
     meta(charset='utf-8')
     meta(name='viewport', content='width=device-width, initial-scale=1')
     link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
@@ -20,7 +20,7 @@ html(lang='en')
                 a(href='/catalog/books') Draws
               hr
               li 
-                a(href='/catalog/author/create') Simulator
+                a(href='/simulator') Simulator
 
                 
         div(class='col-sm-10')

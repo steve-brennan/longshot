@@ -28,7 +28,10 @@ function gameCreate(name, setOfNumbers, cb) {
 function createGames(cb) {
     async.parallel([
         function(callback) {
-          gameCreate('TattsLotto', generateNumberSet(1, 45), callback);
+            gameCreate('TattsLotto', generateNumberSet(1, 45), callback);
+        },
+        function(callback) {
+            gameCreate('SimLotto', generateNumberSet(1, 45), callback);
         },
         ],
         // optional callback
