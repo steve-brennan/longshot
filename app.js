@@ -5,7 +5,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var i18n = require('i18n');
+var dbsetup = require('./initDB')
 
+//DEBUG=longshot:* npm run devstart
 //Set up mongoose connection
 var mongoose = require('mongoose');
 var mongoDB = 'mongodb://mongo:27017/longshot'; //docker run --name dev-mongo -d mongo
@@ -15,6 +17,9 @@ mongoose.connect(mongoDB, function(error) {
 })
 var db = mongoose.connection;
 //db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+//Initialise Database
+dbsetup.populateDB();
 
 var index = require('./routes/index');
 var users = require('./routes/users');

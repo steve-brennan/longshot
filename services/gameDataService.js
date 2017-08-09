@@ -15,16 +15,16 @@ exports.getGameData = function(callback) {
     
 };
 
-exports.generateLocalGameData = function (callback) {
+exports.generateLocalGameData = function (gameName,callback) {
     
     fs.readFile(__dirname + config.service.gamedata.testDataSmallTattslotto.endpoint, (err, data) =>{
         if(err) {callback(err);}
-        this.storeGameData(data, callback);
+        this.storeGameData(gameName, data, callback);
     });
     
 };
 
-exports.storeGameData = function(data, callback) {
+exports.storeGameData = function(gameName, data, callback) {
 
         var draws = [];
         var drawHistoryArray = data.toString().split("\n");
@@ -34,6 +34,7 @@ exports.storeGameData = function(data, callback) {
             var drawRecordArray = drawHistoryArray[i].toString().split(",");
 
             draws.push({
+                game_name: gameName,
                 draw_number: drawRecordArray[0],
                 draw_date: drawRecordArray[1],
                 winning_numbers: [drawRecordArray[2]
@@ -67,42 +68,4 @@ exports.getRemoteGameData = function (callback) {
         .catch((err) => {
             console.log(err); //TODO: handle error
         });
-};
-
-exports.parseGameData = function () {
-    //TODO: remove. draw and drawHistory object literals exist for dev purposes
-    var draw = {
-        drawNumber: Number,
-        drawDate: Date,
-        winningNumbers: [],
-        division: Number
-    };
-    var drawHistory = {
-        draws: []
-    };
-        
-    fs.readFile(__dirname + config.service.gamedata.testDataSmallTattslotto.endpoint, function(err, data) {
-        if(err) throw err;
-        var drawHistoryArray = data.toString().split("\n");
-        for( let i = 1; i < drawHistoryArray.length; i++) {
-
-            var drawRecordArray = drawHistoryArray[i].toString().split(",");
-
-            drawHistory.draws.push({
-                drawNumber: drawRecordArray[0],
-                drawDate: drawRecordArray[1],
-                winningNumbers: [drawRecordArray[2]
-                                ,drawRecordArray[3]
-                                ,drawRecordArray[4]
-                                ,drawRecordArray[5]
-                                ,drawRecordArray[6]
-                                ,drawRecordArray[7]
-                                ,drawRecordArray[8]
-                                ,drawRecordArray[9]],
-                division: drawRecordArray.length > 10 ? drawRecordArray[10] : 'blah'
-            });
-        }
-       
-    });
-
 };
