@@ -18,7 +18,7 @@ function gameCreate(name, setOfNumbers, cb) {
           cb(err, null);
           return;
       }
-      console.log('New game: ' + doc);
+      //console.log('New game: ' + doc);
       cb(null, doc)
   });
 }
@@ -55,7 +55,7 @@ exports.populateDB = function() {
             console.log('FINAL ERR: '+err);
         }
         else {
-            console.log('Results: '+results);
+            //console.log('Results: '+results);
             
         }
     });

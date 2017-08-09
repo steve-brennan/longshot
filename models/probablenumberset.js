@@ -4,7 +4,7 @@
  * This model repsresnt the probable numbers for a given draw and associated weighting and reasoning. Historical sets are maintained for analytics.
  */
 
-let mongoos = require('mongoose');
+let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
 let ProbableNumberSetSchema = Schema({

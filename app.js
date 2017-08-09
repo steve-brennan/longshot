@@ -5,7 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var i18n = require('i18n');
-var dbsetup = require('./initDB')
+var dbsetup = require('./initDB');
 
 //DEBUG=longshot:* npm run devstart
 //Set up mongoose connection
