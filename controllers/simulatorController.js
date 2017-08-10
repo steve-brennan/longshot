@@ -16,47 +16,11 @@ exports.index = function(req, res) {
 
 exports.create = function(req, res) {
 
-    var draws = [];
-    Game.findOne({name: 'SimLotto'})
-        .exec(function (err, game){
-            var draw1 = {
-                game: game,
-                draw_number: '100',
-                draw_date: '01-01-2001',
-                winning_numbers: ['1'
-                ,'2'
-                ,'3'
-                ,'4'
-                ,'5'
-                ,'6'],
-                supplementary_numbers: ['7'
-                ,'8'],
-                division:'1'
-            }
-
-        var draw2 = {
-            game: game,
-            draw_number: '101',
-            draw_date: '01-07-2001',
-            winning_numbers: ['9'
-            ,'10'
-            ,'11'
-            ,'12'
-            ,'13'
-            ,'14'],
-            supplementary_numbers: ['15'
-            ,'16'],
-            division:'1'
-            }
-
-        draws.push(draw1);
-        draws.push(draw2);
-
-        Draw.create(draws, (err, storedDraws) => {
-            if(err) {console.log(err);}
-            res.json(storedDraws);
-        });
-
+    gamedata.generateLocalGameData(req.body.gameName, req.body.week, (err) => {
+        
+        console.log('In CREATE CALL BACK');
+        if(err) {console.log(err);}
+        res.json('Success');
     });
 };
 

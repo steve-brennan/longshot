@@ -3,7 +3,27 @@ $(document).ready(function(){
     populateDrawTable();
     $('#btnDraw').on('click', createDraw);
     $('#btnClear').on('click', clearDraws);
+
+
 });
+
+/**
+ * Returns a closure that will increment the week each time a draw is created. 
+This is used server side to parse the next simulated draw file.
+ */ 
+function startWeek() {
+    var week = 0;
+    function incrementWeek() {
+        if(week == 5) {
+            week = 0;
+        }
+        return week += 1;
+    }
+    return incrementWeek;
+}
+
+//  Initialise the week counter
+var getWeek = startWeek();
 
 function clearDraws(event) {
 
@@ -15,16 +35,17 @@ function clearDraws(event) {
     }).done(function(data){
         console.log('CLEARD');
         $('tr').empty();
+        getWeek = startWeek(); // Reset week counter
     });
 }
-
 
 function createDraw(event) {
     
     event.preventDefault();
-
+    
     var newDraw = {
-        'week': 1
+        'week': getWeek(),
+        'gameName': 'SimLotto'
     }
     var tableContent = '';
     $.ajax({
@@ -32,16 +53,8 @@ function createDraw(event) {
         data: newDraw,
         url: 'simulator/draw',
         dataType: 'JSON'
-    }).done(function(data){
-        console.log(data);
-         $.each(data, function(){
-            tableContent += '<tr>';
-            tableContent += '<td>'+ this.draw_numberx +'</td>';
-            tableContent += '<td>' + this.draw_date + '</td>';
-            tableContent += '</tr>';
-        });
-
-    
+    }).done(function(data){ 
+        console.log('create draw');
         populateDrawTable();
     });
 }
@@ -53,13 +66,13 @@ function populateDrawTable() {
     $.getJSON('/simulator/drawlist', function(data){
         //alert(data);
         $.each(data, function(){
-            console.log(this.draw_number);
             tableContent += '<tr>';
-            tableContent += '<td>'+ this.draw_number +'</td>';
+            tableContent += '<td>' + this.draw_number +'</td>';
             tableContent += '<td>' + this.draw_date + '</td>';
+            tableContent += '<td>' + this.winning_numbers + '</td>';
             tableContent += '</tr>';
         });
-        console.log(tableContent);
         $('#drawList table tbody').html(tableContent);
     });
 }
+
