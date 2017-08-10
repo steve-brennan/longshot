@@ -34,7 +34,7 @@ exports.storeGameData = function(gameName, data, callback) {
             var drawRecordArray = drawHistoryArray[i].toString().split(",");
 
             draws.push({
-                game_name: gameName,
+                game: gameName,
                 draw_number: drawRecordArray[0],
                 draw_date: drawRecordArray[1],
                 winning_numbers: [drawRecordArray[2]

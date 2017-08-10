@@ -16,6 +16,10 @@ router.get('/delete', draw_numbers_controller.delete);
 
 router.get('/simulator', simulator_controller.index);
 
-router.post('/simulator', simulator_controller.create);
+router.post('/simulator/draw', simulator_controller.create);
+
+router.get('/simulator/drawlist', simulator_controller.drawList);
+
+router.delete('/simulator/cleardraws', simulator_controller.deleteDraws);
 
 module.exports = router;

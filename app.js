@@ -26,6 +26,8 @@ var users = require('./routes/users');
 
 var app = express();
 
+console.log('Environment: ' + app.get('env'));
+
 // Configure i18n
 i18n.configure({
   directory: __dirname + '/locales'
