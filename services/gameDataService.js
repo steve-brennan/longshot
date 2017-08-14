@@ -6,40 +6,54 @@ var request = require('request');
 var rp = require('request-promise');
 var Draw = require('../models/draw');
 var Game = require('../models/game');
+var async = require('async');
 
 var config = require('../config/config.json');
 
-// Returns historical data for a given game.
-exports.getGameData = function(callback) {
+//Calls readLocalData and storeGameData to create draws in the database. This is used to simulate weekly draws.
+exports.generateGameData = function(gameName, week, renderCallback) {
 
-    generateLocalGameData();
-    
-};
+    async.series({
+        fileData: (callback)=>{
+            this.readLocalGameData(gameName, week, callback);
+        },
+        game: (callback) => {
+            Game.findOne({name: 'SimLotto'})
+                .exec(function (err, game) { 
+                    callback(null, game);
+                });
+        }
+    }, (err, results)=>{
 
-exports.generateLocalGameData = function (gameName, week, callback) {
-
-    var drawFile = __dirname + '/../tests/' + 'testGameWeek' + week + '.csv';
-    
-    fs.readFile(drawFile, (err, data) =>{
-        if(err) {callback(err);}
-        this.storeGameData(gameName, data, callback);
+        this.storeGameData(results.game, results.fileData, renderCallback);
     });
     
 };
 
-exports.storeGameData = function(gameName, data, callback) {
+//Reads local test game data from simulated csv files.
+exports.readLocalGameData = function (gameName, week, callback) {
+
+    var drawFile = __dirname + '/../tests/' + 'testGameWeek' + week + '.csv';
+    
+    fs.readFile(drawFile, (err, data) =>{
+        console.log('about to read file');
+        if(err) {
+            callback(err);
+        }
+        callback(null, data);
+    });
+    
+};
+
+//Stores game data from parsed file. Avoiding duplication by only storing draws which do not already exits.
+exports.storeGameData = function(game, data, callback) {
 
         var draws = [];
         var drawHistoryArray = data.toString().split("\n");
 
-        Game.findOne({name: 'SimLotto'})
-        .exec(function (err, game) {
-            if (err) {console.log(err);}
-    
-            for( let i = 1; i < drawHistoryArray.length; i++) {
-
-                var drawRecordArray = drawHistoryArray[i].toString().split(",");
-                Draw.findOne({draw_number: drawRecordArray[0]})
+        for( let i = 1; i < drawHistoryArray.length; i++) {
+            var drawRecordArray = drawHistoryArray[i].toString().split(",");
+            Draw.findOne({draw_number: drawRecordArray[0]})
                 .exec(function (err, existingDraw){
                     if(!existingDraw) {
                         draws.push({
@@ -63,8 +77,7 @@ exports.storeGameData = function(gameName, data, callback) {
                     }
                 });
             }
-            callback();
-        });
+            callback(); //Render
 };
 
 /**TODO: Either wire to a cron job or set to get at appload based on time last called.Set to private. 

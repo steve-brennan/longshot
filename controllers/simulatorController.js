@@ -16,9 +16,8 @@ exports.index = function(req, res) {
 
 exports.create = function(req, res) {
 
-    gamedata.generateLocalGameData(req.body.gameName, req.body.week, (err) => {
-        
-        console.log('In CREATE CALL BACK');
+    gamedata.generateGameData(req.body.gameName, req.body.week, (err) => {
+
         if(err) {console.log(err);}
         res.json('Success');
     });
@@ -27,7 +26,7 @@ exports.create = function(req, res) {
 exports.deleteDraws = function(req, res) {
     
     Draw.remove({}, function(err){
-        if(err) {console.log('ERROR***** '+ err);}
+        if(err) {console.log(err);}
         res.send('removed');
     });
 };
