@@ -3,7 +3,8 @@ $(document).ready(function(){
     populateDrawTable();
     $('#btnDraw').on('click', createDraw);
     $('#btnClear').on('click', clearDraws);
-
+    $('#btnCalculate').on('click', calculate);
+    $('#btnClearCalculations').on('click', clearCalculations);
 
 });
 
@@ -31,7 +32,7 @@ function clearDraws(event) {
 
     $.ajax({
         type: 'DELETE',
-        url: 'simulator/cleardraws'
+        url: 'simulator/deletedraws'
     }).done(function(data){
         console.log('CLEARD');
         $('tr').empty();
@@ -39,8 +40,9 @@ function clearDraws(event) {
     });
 }
 
+//Craetes a weekly draw
 function createDraw(event) {
-    
+    console.log('create draw');
     event.preventDefault();
     
     var newDraw = {
@@ -59,6 +61,43 @@ function createDraw(event) {
     });
 }
 
+//Generate the probable number set for the exisiting draw set
+function calculate(event) {
+    console.log('calc called');
+    event.preventDefault();
+
+     var newProb = {
+        'gameName': 'SimLotto'
+    }
+
+    $.ajax({
+        type: 'POST',
+        data: newProb,
+        url: 'simulator/calculate',
+        dataType: 'JSON'
+    }).done(function(data){ 
+        console.log(data);
+        populateProbableNumberTable();
+    });
+
+}
+
+//Clear all probable number sets from the db
+function clearCalculations() {
+
+    event.preventDefault();
+
+    $.ajax({
+        type: 'DELETE',
+        url: 'simulator/clearprobablenumbers'
+    }).done(function(data){
+        console.log('CLEARD');
+        $('tr').empty();
+        getWeek = startWeek(); // Reset week counter
+    });
+
+}
+
 function populateDrawTable() {
 
     var tableContent = '';
@@ -73,6 +112,28 @@ function populateDrawTable() {
             tableContent += '</tr>';
         });
         $('#drawList table tbody').html(tableContent);
+    });
+}
+
+function populateProbableNumberTable() {
+    console.log('pop probs');
+    var tableContent = '';
+
+    $.getJSON('/simulator/probablenumbers', {'gameName':'SimLotto'} ,function(data){
+        if(data) {
+            tableContent += '<tr>';
+            tableContent += '<td>'+ data.set_of_numbers[0].value +'</td>';
+            tableContent += '<td>'+ data.set_of_numbers[1].value  +'</td>';
+            tableContent += '<td>'+ data.set_of_numbers[2].value +'</td>';
+            tableContent += '<td>'+ data.set_of_numbers[3].value +'</td>';
+            tableContent += '<td>'+ data.set_of_numbers[4].value +'</td>';
+            tableContent += '<td>'+ data.set_of_numbers[5].value  +'</td>';
+            //tableContent += '<td>'+ data.set_of_numbers[6].value  +'</td>';
+            //tableContent += '<td>'+ data.set_of_numbers[7].value  +'</td>';
+            tableContent += '</tr>';
+
+            $('#probableNumberSet table tbody').html(tableContent);
+        }
     });
 }
 

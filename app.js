@@ -8,15 +8,13 @@ var i18n = require('i18n');
 var dbsetup = require('./initDB');
 
 //DEBUG=longshot:* npm run devstart
-//Set up mongoose connection
+//Set up db connection
 var mongoose = require('mongoose');
 var mongoDB = 'mongodb://mongo:27017/longshot'; //docker run --name dev-mongo -d mongo
 
-mongoose.connect(mongoDB, function(error) {
-  if(error){console.log('EEROR= '+error);}
-})
-var db = mongoose.connection;
-//db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+mongoose.connect(mongoDB, (error) => {
+  if(error){console.log('MongoDB Error: '+error);}
+});
 
 //Initialise Database
 dbsetup.populateDB();

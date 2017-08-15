@@ -2,7 +2,7 @@ let async = require('async');
 let gamedata = require('../services/gameDataService');
 let Draw = require('../models/draw');
 let Game = require('../models/game');
-let ProbableNumberSet = require('../models/probableNumberSet');
+let ProbableNumberSet = require('../models/probablenumberset');
 
 
 exports.index = function(req, res) {

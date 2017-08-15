@@ -1,14 +1,14 @@
 'use strict'
 
-var fs = require('fs');
-var http = require('http');
-var request = require('request');
-var rp = require('request-promise');
-var Draw = require('../models/draw');
-var Game = require('../models/game');
-var async = require('async');
+const fs = require('fs');
+const http = require('http');
+const request = require('request');
+const rp = require('request-promise');
+const Draw = require('../models/draw');
+const Game = require('../models/game');
+const async = require('async');
 
-var config = require('../config/config.json');
+const config = require('../config/config.json');
 
 //Calls readLocalData and storeGameData to create draws in the database. This is used to simulate weekly draws.
 exports.generateGameData = function(gameName, week, renderCallback) {
@@ -18,7 +18,7 @@ exports.generateGameData = function(gameName, week, renderCallback) {
             this.readLocalGameData(gameName, week, callback);
         },
         game: (callback) => {
-            Game.findOne({name: 'SimLotto'})
+            Game.findOne({name: gameName})
                 .exec(function (err, game) { 
                     callback(null, game);
                 });
@@ -53,7 +53,7 @@ exports.storeGameData = function(game, data, callback) {
 
         for( let i = 1; i < drawHistoryArray.length; i++) {
             var drawRecordArray = drawHistoryArray[i].toString().split(",");
-            Draw.findOne({draw_number: drawRecordArray[0]})
+            Draw.findOne({game: game, draw_number: drawRecordArray[0]})
                 .exec(function (err, existingDraw){
                     if(!existingDraw) {
                         draws.push({

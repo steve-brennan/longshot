@@ -4,11 +4,28 @@ block content
     fieldset
         div(class="btn-group" role="group")
             button#btnDraw Draw
-            button#btnClear Clear
+            button#btnClear Clear Draw
+            button#btnCalculate Calculate
+            button#btnClearCalculations Clear Calculations
 
     h1 #{__('TITLE')}
     p #{__('WELCOME')} 
     p= activity
+    hr
+    div(class="number-set")
+        h4(class='number-set-heading') Probable Number Set:
+        #probableNumberSet
+            table(class="table small-table")
+                thead
+                    th Num1
+                    th Num2
+                    th Num3
+                    th Num4
+                    th Num5
+                    th Num6
+                    th Num7
+                    th Num8
+                tbody
     hr
     p #{game.name} loaded.
     #drawList
@@ -17,4 +34,4 @@ block content
                 th Draw Number
                 th Draw Date
                 th Winning Numbers
-            tbody    
+            tbody
