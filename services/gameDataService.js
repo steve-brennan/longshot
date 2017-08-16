@@ -65,10 +65,10 @@ exports.storeGameData = function(game, data, callback) {
                                             ,drawRecordArray[4]
                                             ,drawRecordArray[5]
                                             ,drawRecordArray[6]
-                                            ,drawRecordArray[7]],
-                            supplementary_numbers: [drawRecordArray[8]
-                                                    ,drawRecordArray[9]],
-                            division: drawRecordArray.length > 10 ? drawRecordArray[10] : ''
+                                            ,drawRecordArray[7]
+                                            ,drawRecordArray[8]
+                                            ,drawRecordArray[9]]
+                            ,division: drawRecordArray.length > 10 ? drawRecordArray[10] : ''
                         });
 
                         Draw.create(draws, (err, storedDraws) => {

@@ -44,19 +44,18 @@ exports.drawList = function(req,res) {
 };
 
 exports.getProbableNumberSet = function(req, res) {
-    console.log('get probs for '+ req.query.gameName);
+
      Game.findOne({name: req.query.gameName})
         .exec((err, game) => {
             ProbableNumberSet.findOne({game: game, current_set: true})
                 .exec((err, probableNumberSet) => {
-                    console.log('pns ' + probableNumberSet);
                     res.json(probableNumberSet);
                 });
         });
 }
 
 exports.calculate = function(req, res) {
-    //console.log('request body '+req.body.gameName);
+
     probabilityEngine.calculateProbableNumberSet(req.body.gameName, () => {
         res.json('success');
     });

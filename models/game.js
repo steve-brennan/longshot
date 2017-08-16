@@ -14,8 +14,8 @@ var GameSchema = Schema({
     latest_draw_date: {type: Date},
     set_of_numbers: [{
         value: {type: String},
-        times_drawn: {type: Number}
-    }],
+        times_drawn: {type: Number}    
+    }]
 });
 
 module.exports = mongoose.model('Game', GameSchema);

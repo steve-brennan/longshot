@@ -1,4 +1,6 @@
 'use strict'
+
+const async = require('async');
 const Draw = require('../models/draw');
 const Game = require('../models/game');
 const ProbableNumberSet = require('../models/probablenumberset');
@@ -7,29 +9,49 @@ const ProbableNumberSet = require('../models/probablenumberset');
 
 exports.calculateProbableNumberSet = function(gameName, callback) {
 
-    Game.findOne({name: gameName})
-        .exec((err, game) => {
-            if(err){cosnole.log(err);}
-            calculate(game);
-        });
-    callback();
+    async.waterfall([
+        function(callback) {
+            Game.findOne({name:gameName})
+                .exec((err, game) => {
+                    if(err) {console.log(err);}
+                    callback(null, game);
+                })
+        },
+        determineBaseWaiting,
+        //mySecondFunction,
+        //myLastFunction,
+        ], function (err, result) {
+            console.log('Final Function');
+            console.log(result)
+        
+    });
 };
 
-function calculate(game) {
+function determineBaseWaiting(game, callback) {
+    var numberSetCount = [];
+    var baseWeightingMap = setBaseWeightingMap(game.set_of_numbers);
 
     Draw.find({game: game})
         .exec((err, draw_list) => {
-            var winningNumbers = createValueSet(draw_list[0].winning_numbers);
-            ProbableNumberSet.create({
-                game: game,
-                from_date: '20170815',
-                to_date: '20170822',
-                current_set: true,
-                set_of_numbers: winningNumbers
-            }, (err,pns) => {
-                if(err){console.log('PNS ERROR ' + err);}
-            });
-        });
+            for(let i = 0; i < draw_list.length; i++) {
+                draw_list[i].winning_numbers.map((number) =>{
+                    if(!isNaN(number) ) {
+                        baseWeightingMap.set(number, baseWeightingMap.get(number) +1);                      
+                    }
+                });
+            }
+            callback(null, baseWeightingMap);
+        });   
+};
+
+function setBaseWeightingMap(setOfNumbers) {
+    var baseWeightingMap = new Map();
+
+    for(let i =0 ; i < setOfNumbers.length; i++) {
+        baseWeightingMap.set(setOfNumbers[i].value, 0);
+    }
+
+    return baseWeightingMap;
 };
 
 function createValueSet(arrayOfNumbers) {
@@ -40,7 +62,7 @@ function createValueSet(arrayOfNumbers) {
         if(num) {
             return {value: num, weighting:weight}
             weight += 1;
-        }
+        } 
     });
     return result;
 

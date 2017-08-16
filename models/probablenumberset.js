@@ -15,7 +15,12 @@ var ProbableNumberSetSchema = Schema(
         current_set: {type: Boolean},
         set_of_numbers: [{
             value:  {type: String},
-            weighting: {Number: Number}
+            weighting: {type: Number},
+            provisional_weighting: {type: Number},
+            conditional_weighting: [{
+                with_value: {type: String},
+                weighting: {type: Number}
+            }]
         }]
     }
 );

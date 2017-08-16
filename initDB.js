@@ -42,7 +42,7 @@ function createGames(cb) {
 function generateNumberSet(start, end) {
     var numberSet = [];
     for(let i = start; i < end +1; i++) {
-        numberSet.push({value: i});
+        numberSet.push({value:i, times_drawn: 0});
     }
     return numberSet;
 }
