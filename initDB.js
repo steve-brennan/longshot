@@ -31,7 +31,7 @@ function createGames(cb) {
             gameCreate('TattsLotto', generateNumberSet(1, 45), callback);
         },
         function(callback) {
-            gameCreate('SimLotto', generateNumberSet(1, 45), callback);
+            gameCreate('SimLotto', generateNumberSet(1, 12), callback);
         },
         ],
         // optional callback
@@ -42,7 +42,7 @@ function createGames(cb) {
 function generateNumberSet(start, end) {
     var numberSet = [];
     for(let i = start; i < end +1; i++) {
-        numberSet.push({value:i, times_drawn: 0});
+        numberSet.push({value: i, times_drawn: 0});
     }
     return numberSet;
 }
