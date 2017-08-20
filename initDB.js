@@ -31,7 +31,7 @@ function createGames(cb) {
             gameCreate('TattsLotto', generateNumberSet(1, 45), callback);
         },
         function(callback) {
-            gameCreate('SimLotto', generateNumberSet(1, 12), callback);
+            gameCreate('SimLotto', generateNumberSet(1, 45), callback);
         },
         ],
         // optional callback

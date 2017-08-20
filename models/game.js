@@ -11,9 +11,14 @@ var GameSchema = Schema({
     first_draw_date: {type: Date},
     latest_draw_date: {type: Date},
     set_of_numbers: [{
-        value: {type: String},
+        value: {type: String, 
+                set: v => padNumber(v)},
         times_drawn: {type: Number}
     }]
 });
+
+function padNumber(number) {
+    return number.toString().length < 2 ? '0' + number.toString() : number;
+}
 
 module.exports = mongoose.model('Game', GameSchema);

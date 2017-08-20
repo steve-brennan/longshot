@@ -19,10 +19,11 @@ exports.calculateProbableNumberSet = function(gameName, callback) {
         },
         determineBaseWeighting,
         determinePairWeighting,
-        //myLastFunction,
+        // calculateProbableNumberSet - recieves maps fro all subsequent functions and calculates weighting
+        //createProbableNumberSet
         ], function (err, result) {
             console.log('Final Function');
-            console.log(result)
+            //console.log(result)
         
     });
 };
@@ -35,7 +36,7 @@ function determineBaseWeighting(game, callback) {
         .exec((err, draw_list) => {
             for(let i = 0; i < draw_list.length; i++) {
                 draw_list[i].winning_numbers.map((number) =>{
-                    if(!isNaN(number) ) {
+                    if(!isNaN(number)) {
                         baseWeightingMap.set(number, baseWeightingMap.get(number) +1);                      
                     }
                 });
@@ -44,25 +45,56 @@ function determineBaseWeighting(game, callback) {
         });   
 };
 
-function determinePairWeighting(game, baseWeightingMap) {
+function determinePairWeighting(game, baseWeightingMap, callback) {
 
     var pairWeightingMap = setPairWeightingMap(game.set_of_numbers);
 
-    for(var key of pairWeightingMap.keys()) {
-        console.log(key);
-    }
+    Draw.find({game: game})
+        .exec((err, draw_list) => {
+            for(let i = 0; i < draw_list.length; i++) {
+                let winningNumbers = draw_list[i].winning_numbers.sort();
+                for(let x = 0; x < winningNumbers.length; x++ ) {
+                    if(!isNaN(winningNumbers[x])) {
+                        let numberX = winningNumbers[x];    
+                        for(let y = x+1; y < winningNumbers.length; y++) {
+                            if(!isNaN(winningNumbers[y])) {
+                                let numberY = winningNumbers[y];
+                                let pairFisrtHalf = numberX.toString() + numberY.toString()
+                                let pairSecondHalf = pairFisrtHalf.split('').reverse().join('');
+                                let pairCombination = pairFisrtHalf.toString() + pairSecondHalf.toString();
+                                pairWeightingMap.set(pairCombination, pairWeightingMap.get(pairCombination) +1);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // for(var key of pairWeightingMap.keys()) {
+                
+            //     if(pairWeightingMap.get(key) > 0) {
+            //         console.log(key + 'combo drawn ' + pairWeightingMap.get(key) + ' times');
+            //     }
+            // }
+            console.log('Lenght of pwm ' + pairWeightingMap.size);
+            callback(null, game, baseWeightingMap, pairWeightingMap);
+        });
 
 }
 
+function setPairCombinationWeightingMap(setOfNumbers) {
+
+    var pairCombinationWeightingMap = new Map();
+}
+
 function setPairWeightingMap(setOfNumbers) {
-    console.log('in pair weighting');
+    
     var pairWeightingMap = new Map();
 
     for(let x = 0; x< setOfNumbers.length; x++) {
-        let numberX = setOfNumbers[x].value.length < 2 ? '0' + setOfNumbers[x].value : setOfNumbers[x].value;
-        for(let y = 0; y < setOfNumbers.length; y++) {
+        let numberX = setOfNumbers[x].value;
+        for(let y = x + 1; y < setOfNumbers.length; y++) {
             if(x !== y) {
-                let numberY = setOfNumbers[x].value.length < 2 ? '0' + setOfNumbers[x].value : setOfNumbers[x].value;
+                let numberY = setOfNumbers[y].value;
                 let numberKeyFirstHalf = numberX.toString() + numberY.toString();
                 let numberKeySecondHalf = numberKeyFirstHalf.split('').reverse().join('');
                 let numberKey = numberKeyFirstHalf.toString() + numberKeySecondHalf.toString();
