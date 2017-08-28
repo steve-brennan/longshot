@@ -17,7 +17,7 @@ exports.index = function(req, res) {
 };
 
 exports.draw = function(req, res) {
-
+    console.log('draw POST called');
     gamedata.generateGameData(req.body.gameName, req.body.week, (err) => {
 
         if(err) {console.log(err);}
@@ -35,7 +35,7 @@ exports.deleteDraws = function(req, res) {
 
 exports.drawList = function(req,res) {
 
-    Draw.find()
+    Draw.find({}, null, {sort:{draw_number: 1}})
         .exec(function (err, draw_list){
             if(err) {console.log(err);}
             res.json(draw_list);

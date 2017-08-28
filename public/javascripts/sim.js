@@ -46,7 +46,7 @@ function createDraw(event) {
     event.preventDefault();
     
     var newDraw = {
-        'week': getWeek(),
+        'week': 1,//getWeek(),
         'gameName': 'SimLotto'
     }
     var tableContent = '';
@@ -56,7 +56,7 @@ function createDraw(event) {
         url: 'simulator/draw',
         dataType: 'JSON'
     }).done(function(data){ 
-        console.log('create draw');
+        console.log('create draw done');
         populateDrawTable();
     });
 }
@@ -101,7 +101,7 @@ function clearCalculations() {
 function populateDrawTable() {
 
     var tableContent = '';
-
+    console.log('poping dt')
     $.getJSON('/simulator/drawlist', function(data){
         //alert(data);
         $.each(data, function(){

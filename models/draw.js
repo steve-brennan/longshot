@@ -17,6 +17,7 @@ var DrawSchema = Schema(
 );
 
 function padNumber(number) {
+  number = number.trim();
   return number.toString().length < 2 ? '0' + number.toString() : number;
 }
 

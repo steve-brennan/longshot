@@ -17,115 +17,144 @@ exports.calculateProbableNumberSet = function(gameName, callback) {
                     callback(null, game);
                 })
         },
-        determineBaseWeighting,
-        determinePairWeighting,
-        // calculateProbableNumberSet - recieves maps fro all subsequent functions and calculates weighting
-        //createProbableNumberSet
+        determinePairCombinationWeighting,
         ], function (err, result) {
-            console.log('Final Function');
-            //console.log(result)
-        
+            console.log('Final Function');        
     });
 };
 
-function determineBaseWeighting(game, callback) {
+function initProbableNumberSet(setOfNumbers) {
 
-    var baseWeightingMap = setBaseWeightingMap(game.set_of_numbers);
+    let newProbableNumberSet = [];
 
-    Draw.find({game: game})
-        .exec((err, draw_list) => {
-            for(let i = 0; i < draw_list.length; i++) {
-                draw_list[i].winning_numbers.map((number) =>{
-                    if(!isNaN(number)) {
-                        baseWeightingMap.set(number, baseWeightingMap.get(number) +1);                      
-                    }
-                });
-            }
-            callback(null, game, baseWeightingMap);
-        });   
-};
+    for(let i = 0; i < setOfNumbers.length; i++) {
+        newProbableNumberSet.push({
+            value: setOfNumbers[i].value,
+            weighting: 0,
+            provisional_weighting: 0,
+            conditional_weighting: []
+        });
+    }
 
-function determinePairWeighting(game, baseWeightingMap, callback) {
+    return newProbableNumberSet;
+}
 
-    var pairWeightingMap = setPairWeightingMap(game.set_of_numbers);
+function determinePairCombinationWeighting(game, callback) {
 
-    Draw.find({game: game})
+    let weightingMap = new setWeightingMap(game.set_of_numbers);
+
+    Draw.find({game: game}).sort({draw_number: 'asc'})
         .exec((err, draw_list) => {
             for(let i = 0; i < draw_list.length; i++) {
                 let winningNumbers = draw_list[i].winning_numbers.sort();
-                for(let x = 0; x < winningNumbers.length; x++ ) {
-                    if(!isNaN(winningNumbers[x])) {
-                        let numberX = winningNumbers[x];    
-                        for(let y = x+1; y < winningNumbers.length; y++) {
-                            if(!isNaN(winningNumbers[y])) {
-                                let numberY = winningNumbers[y];
-                                let pairFisrtHalf = numberX.toString() + numberY.toString()
-                                let pairSecondHalf = pairFisrtHalf.split('').reverse().join('');
-                                let pairCombination = pairFisrtHalf.toString() + pairSecondHalf.toString();
-                                pairWeightingMap.set(pairCombination, pairWeightingMap.get(pairCombination) +1);
+                for(let w = 0; w < winningNumbers.length; w++) {
+                    if(!isNaN(winningNumbers[w])) {
+                        let numberW = winningNumbers[w];
+                        weightingMap.set(numberW, updateWeighting(weightingMap.get(numberW), +1, +1, null, null));
+                        for(let x = w+1; x < winningNumbers.length; x++) {
+                            if(!isNaN(winningNumbers[x])) {
+                                let numberX = winningNumbers[x];
+                                weightingMap.set(numberW, updateWeighting(weightingMap.get(numberW), 0, +1, numberX, +1));
+                                weightingMap.set(numberX, updateWeighting(weightingMap.get(numberX), 0, +1, numberW, +1));
+                                for(let y = x+1; y < winningNumbers.length; y++) {
+                                    if(!isNaN(winningNumbers[y])) {
+                                        let numberY = winningNumbers[y];
+                                        for(let z = y+1; z < winningNumbers.length; z++) {
+                                            if(!isNaN(winningNumbers[z])) {
+                                                let numberZ = winningNumbers[z];
+                                                weightingMap.set(numberW, updateWeighting(weightingMap.get(numberW), 
+                                                0, 
+                                                +3, 
+                                                numberX.toString() + numberY.toString() + numberZ.toString(),
+                                                +3));
+                                                weightingMap.set(numberX, updateWeighting(weightingMap.get(numberX), 
+                                                0, 
+                                                +3, 
+                                                numberW.toString() + numberY.toString() + numberZ.toString(),
+                                                +3));
+                                                weightingMap.set(numberY, updateWeighting(weightingMap.get(numberY), 
+                                                0, 
+                                                +3, 
+                                                numberW.toString() + numberX.toString() + numberZ.toString(),
+                                                +3));
+                                                weightingMap.set(numberZ, updateWeighting(weightingMap.get(numberZ), 
+                                                0, 
+                                                +3, 
+                                                numberW.toString() + numberX.toString() + numberY.toString(),
+                                                +3));
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
+            for(var key of weightingMap.keys()) {
+                if(weightingMap.get(key)) {
+                    console.log('Key: ' + key + ' weight: ' + weightingMap.get(key).weighting + ' provisional ' + weightingMap.get(key).provisional_weighting + ' conditionals ' + weightingMap.get(key).conditional_weighting.length);
+                }
+            }
 
-            // for(var key of pairWeightingMap.keys()) {
-                
-            //     if(pairWeightingMap.get(key) > 0) {
-            //         console.log(key + 'combo drawn ' + pairWeightingMap.get(key) + ' times');
+            // for(var key of weightingMap.keys()) {
+            //     for(let i = 0; i < weightingMap.get(key).conditional_weighting.length; i++) {
+            //         console.log('Number ' + key + ' with ' + weightingMap.get(key).conditional_weighting[i].with_value +
+            //         ' add weight ' + weightingMap.get(key).conditional_weighting[i].weighting);
             //     }
             // }
-            console.log('Lenght of pwm ' + pairWeightingMap.size);
-            callback(null, game, baseWeightingMap, pairWeightingMap);
+            callback(null, game, weightingMap);
         });
 
+
 }
 
-function setPairCombinationWeightingMap(setOfNumbers) {
-
-    var pairCombinationWeightingMap = new Map();
-}
-
-function setPairWeightingMap(setOfNumbers) {
+function setWeightingMap(setOfNumbers) {
     
-    var pairWeightingMap = new Map();
+    let weightingMap = new Map();
 
-    for(let x = 0; x< setOfNumbers.length; x++) {
-        let numberX = setOfNumbers[x].value;
-        for(let y = x + 1; y < setOfNumbers.length; y++) {
-            if(x !== y) {
-                let numberY = setOfNumbers[y].value;
-                let numberKeyFirstHalf = numberX.toString() + numberY.toString();
-                let numberKeySecondHalf = numberKeyFirstHalf.split('').reverse().join('');
-                let numberKey = numberKeyFirstHalf.toString() + numberKeySecondHalf.toString();
-                pairWeightingMap.set(numberKey, 0);
-            }
+    for(let i =0 ; i < setOfNumbers.length; i++) {
+        weightingMap.set(setOfNumbers[i].value,{
+            value: setOfNumbers[i].value,
+            weighting: 0,
+            provisional_weighting: 0,
+            conditional_weighting: []
+        });
+    }
+    return weightingMap;
+}
+
+function updateWeighting(previousWeighting, weightAdjust, provisionalWeightAdjust, withValue, withWeightAdjust ) {
+    var conditionalWeighting = previousWeighting.conditional_weighting;
+    if(withValue) {
+        var conditionalWeightingIndex = previousWeighting.conditional_weighting.findIndex((v) => {
+            return v.with_value == withValue;
+        });
+        if(conditionalWeightingIndex >= 0) {
+            conditionalWeighting[conditionalWeightingIndex] = {
+                with_value : conditionalWeighting[conditionalWeightingIndex].with_value = 
+                            conditionalWeighting[conditionalWeightingIndex].with_value,
+                weighting : conditionalWeighting[conditionalWeightingIndex].weighting = 
+                            conditionalWeighting[conditionalWeightingIndex].weighting + withWeightAdjust
+            };
+        } else {
+            conditionalWeighting.push({
+                with_value: withValue,
+                weighting : withWeightAdjust
+            });
         }
     }
 
-    return pairWeightingMap;
+    var newWeighting = {
+        value : previousWeighting.value,
+        weighting : previousWeighting.weighting + weightAdjust,
+        provisional_weighting : previousWeighting.provisional_weighting + provisionalWeightAdjust,
+        conditional_weighting : conditionalWeighting
+
+        };
+
+    return newWeighting;
+    
 }
 
-function setBaseWeightingMap(setOfNumbers) {
-    var baseWeightingMap = new Map();
-
-    for(let i =0 ; i < setOfNumbers.length; i++) {
-        baseWeightingMap.set(setOfNumbers[i].value, 0);
-    }
-
-    return baseWeightingMap;
-};
-
-function createValueSet(arrayOfNumbers) {
-
-    var result = [];
-    var weight = 8;
-    result = arrayOfNumbers.map((num) => {
-        if(num) {
-            return {value: num, weighting:weight}
-            weight += 1;
-        } 
-    });
-    return result;
-
-};
+// 45! / 4!(45 -4)! = 148995 
