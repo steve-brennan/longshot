@@ -17,11 +17,70 @@ exports.calculateProbableNumberSet = function(gameName, callback) {
                     callback(null, game);
                 })
         },
-        determinePairCombinationWeighting,
+        determineWeighting,
+        createProbableNumberSet,
         ], function (err, result) {
-            console.log('Final Function');        
+            console.log('Final Function');
+            //console.log(result);       
     });
 };
+
+function createProbableNumberSet(game, weightingMap) {
+    console.log('In cPNS ');
+
+    let averageDrawOccurence = 0;
+    let averageProvisionalWeighting = 0;
+    Draw.count({game:game}, (err, count) => {
+        console.log('total draws ' + count);
+    });
+
+    
+    let pns = new ProbableNumberSet({
+        game: game,
+        from_date : new Date(),
+        to_date: new Date(),
+        current_set: true,
+        set_of_numbers : [], //Array.from(weightingMap.values()),
+    });
+
+    let sortedProbableNumberSetProvisional = Array.from(weightingMap.values()).sort((a,b) => {
+        return a.provisional_weighting - b.provisional_weighting;
+    });
+
+    let totalWeighting = sortedProbableNumberSetProvisional.reduce((acc, cur) => {
+        return acc + cur.weighting;
+    }, 0);
+    averageDrawOccurence = Math.round(totalWeighting/game.set_of_numbers[game.set_of_numbers.length -1].value)
+    console.log('Avg ' + averageDrawOccurence);
+
+    let totalProvisionalWeighting = sortedProbableNumberSetProvisional.reduce((acc, cur) =>{
+        return acc + cur.provisional_weighting;
+    }, 0);
+    console.log('total prov w ' + totalProvisionalWeighting);
+    averageProvisionalWeighting = Math.round(totalProvisionalWeighting/game.set_of_numbers[game.set_of_numbers.length -1].value)
+    console.log('Avg prov ' + averageProvisionalWeighting);
+
+    let pivot = sortedProbableNumberSetProvisional[0];
+    let candidates = pivot.conditional_weighting.sort((a,b) => {
+        return a.weighting - b.weighting;
+    });
+    console.log('Pivot ' + pivot.value );
+
+    for(let i = 0; i< candidates.length; i++) {
+        if(candidates[i].with_value.length < 3) {
+            console.log('candidate ' + candidates[i].with_value + ' weighting ' + candidates[i].weighting);
+        }
+    }
+
+        sortedProbableNumberSetProvisional.forEach((val) =>{
+            console.log('Value ' + val.value + ' weight ' + val.weighting + ' provisional weighting ' + val.provisional_weighting);
+        });
+
+    
+
+
+}
+
 
 function initProbableNumberSet(setOfNumbers) {
 
@@ -39,7 +98,7 @@ function initProbableNumberSet(setOfNumbers) {
     return newProbableNumberSet;
 }
 
-function determinePairCombinationWeighting(game, callback) {
+function determineWeighting(game, callback) {
 
     let weightingMap = new setWeightingMap(game.set_of_numbers);
 
@@ -91,18 +150,7 @@ function determinePairCombinationWeighting(game, callback) {
                     }
                 }
             }
-            for(var key of weightingMap.keys()) {
-                if(weightingMap.get(key)) {
-                    console.log('Key: ' + key + ' weight: ' + weightingMap.get(key).weighting + ' provisional ' + weightingMap.get(key).provisional_weighting + ' conditionals ' + weightingMap.get(key).conditional_weighting.length);
-                }
-            }
-
-            // for(var key of weightingMap.keys()) {
-            //     for(let i = 0; i < weightingMap.get(key).conditional_weighting.length; i++) {
-            //         console.log('Number ' + key + ' with ' + weightingMap.get(key).conditional_weighting[i].with_value +
-            //         ' add weight ' + weightingMap.get(key).conditional_weighting[i].weighting);
-            //     }
-            // }
+          
             callback(null, game, weightingMap);
         });
 

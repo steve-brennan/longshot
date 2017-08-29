@@ -31,7 +31,8 @@ exports.generateGameData = function(gameName, week, renderCallback) {
 
 //Reads local test game data from simulated csv files.
 exports.readLocalGameData = function (gameName, week, callback) {
-    var drawFile = __dirname + '/../tests/' + 'testGameData.csv'; //'testGameWeek' + week + '.csv';
+    
+    var drawFile = __dirname + '/../tests/' + 'TattsLotto.csv'; //'testGameWeek' + week + '.csv';
     
     fs.readFile(drawFile, (err, data) =>{
         if(err) {
