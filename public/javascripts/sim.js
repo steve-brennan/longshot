@@ -3,6 +3,7 @@ $(document).ready(function(){
     populateDrawTable();
     $('#btnDraw').on('click', createDraw);
     $('#btnClear').on('click', clearDraws);
+    $('#btnGetNumbers').on('click', populateProbableNumberTable);
     $('#btnCalculate').on('click', calculate);
     $('#btnClearCalculations').on('click', clearCalculations);
 
@@ -77,7 +78,7 @@ function calculate(event) {
         dataType: 'JSON'
     }).done(function(data){ 
         console.log(data);
-        populateProbableNumberTable();
+        //populateProbableNumberTable();
     });
 
 }
@@ -120,16 +121,20 @@ function populateProbableNumberTable() {
     var tableContent = '';
 
     $.getJSON('/simulator/probablenumbers', {'gameName':'SimLotto'} ,function(data){
+        console.log(data);
         if(data) {
+            let setOfNumbers = data.set_of_numbers.sort((a,b) => {
+                return a.provisional_weighting - b.provisional_weighting;
+            });
             tableContent += '<tr>';
-            tableContent += '<td>'+ data.set_of_numbers[0].value +'</td>';
-            tableContent += '<td>'+ data.set_of_numbers[1].value  +'</td>';
-            tableContent += '<td>'+ data.set_of_numbers[2].value +'</td>';
-            tableContent += '<td>'+ data.set_of_numbers[3].value +'</td>';
-            tableContent += '<td>'+ data.set_of_numbers[4].value +'</td>';
-            tableContent += '<td>'+ data.set_of_numbers[5].value  +'</td>';
-            //tableContent += '<td>'+ data.set_of_numbers[6].value  +'</td>';
-            //tableContent += '<td>'+ data.set_of_numbers[7].value  +'</td>';
+            tableContent += '<td>'+ setOfNumbers[0].value +'</td>';
+            tableContent += '<td>'+ setOfNumbers[1].value  +'</td>';
+            tableContent += '<td>'+ setOfNumbers[2].value +'</td>';
+            tableContent += '<td>'+ setOfNumbers[3].value +'</td>';
+            tableContent += '<td>'+ setOfNumbers[4].value +'</td>';
+            tableContent += '<td>'+ setOfNumbers[5].value  +'</td>';
+            tableContent += '<td>'+ setOfNumbers[6].value  +'</td>';
+            tableContent += '<td>'+ setOfNumbers[7].value  +'</td>';
             tableContent += '</tr>';
 
             $('#probableNumberSet table tbody').html(tableContent);
