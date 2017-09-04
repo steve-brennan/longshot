@@ -49,6 +49,10 @@ exports.getProbableNumberSet = function(req, res) {
         .exec((err, game) => {
             ProbableNumberSet.findOne({game: game, current_set: true})
                 .exec((err, probableNumberSet) => {
+                    if(err) {console.log(err);}
+                    probableNumberSet.set_of_numbers.sort((a,b) => {
+                        return b.provisional_weighting - a.provisional_weighting;
+                    });
                     res.json(probableNumberSet);
                 });
         });

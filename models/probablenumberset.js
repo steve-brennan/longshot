@@ -13,6 +13,8 @@ var ProbableNumberSetSchema = Schema(
         from_date: {type: Date},
         to_date: {type: Date},
         current_set: {type: Boolean},
+        average_draw_occurence: {type: Number},
+        average_provisional_weighting: {type: Number},
         set_of_numbers: [{
             value:  {type: String},
             weighting: {type: Number},

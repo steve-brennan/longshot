@@ -8,7 +8,6 @@ const ProbableNumberSet = require('../models/probablenumberset');
 // Conatins the core functionality to determine number weighting.
 
 exports.calculateProbableNumberSet = function(gameName, callback) {
-    console.log('In PEcalcPNS');
     async.waterfall([
         function(callback) {
             Game.findOne({name:gameName})
@@ -21,7 +20,6 @@ exports.calculateProbableNumberSet = function(gameName, callback) {
         createProbableNumberSet,
         ], function (err, result) {
             console.log('Final Function');
-            //console.log(result);
             callback();   
     });
 };
@@ -58,44 +56,16 @@ function createProbableNumberSet(game, weightingMap, callback) {
         from_date : new Date(),
         to_date: new Date(),
         current_set: true,
+        average_draw_occurence: averageDrawOccurence,
+        average_provisional_weighting: averageProvisionalWeighting,
         set_of_numbers : setOfNumbers,
     });
 
     ProbableNumberSet.create(pns, function(err, newPNS){
-        if(err) {console.log(err);}
+        if(err) {callback(err);}
         console.log('PNS created ' + newPNS.game.name);
         callback(null,newPNS);
     });
-
-
-    setOfNumbers.sort((a,b) => {
-        return b.provisional_weighting - a.provisional_weighting;
-    });
-    setOfNumbers.forEach((val) =>{
-        console.log('Value ' + val.value + ' weight ' + val.weighting + ' provisional weighting ' + val.provisional_weighting + ' draws ' + (averageDrawOccurence - val.weighting  ));
-        //console.log(val);
-    });
-
-    let luckyNumbers = [];
-    luckyNumbers.push(setOfNumbers[0]);
-
-    setOfNumbers[0].conditional_weighting.sort((a,b) => {
-        return a.weighting - b.weighting;
-    });
-
-    setOfNumbers[0].conditional_weighting.forEach((conNum) => {
-        console.log('with value ' + conNum.with_value + ' weighting ' + conNum.weighting);
-    });
-    let nextLuckyNumber = setOfNumbers.find((num) => {
-        return num.value == luckyNumbers[0].conditional_weighting[0].with_value;
-    });
-
-    luckyNumbers.push(nextLuckyNumber);
-
-    for(let i = 0; i< luckyNumbers.length; i++) {
-        console.log('Lucky Number ' + i + ' is ' + luckyNumbers[i].value);
-    }
-
 
 }
 

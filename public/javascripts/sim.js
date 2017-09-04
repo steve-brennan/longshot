@@ -124,7 +124,7 @@ function populateProbableNumberTable() {
         console.log(data);
         if(data) {
             let setOfNumbers = data.set_of_numbers.sort((a,b) => {
-                return a.provisional_weighting - b.provisional_weighting;
+                return b.provisional_weighting - a.provisional_weighting;
             });
             tableContent += '<tr>';
             tableContent += '<td>'+ setOfNumbers[0].value +'</td>';
